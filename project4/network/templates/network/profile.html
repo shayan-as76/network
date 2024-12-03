@@ -1,0 +1,103 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <div class="col-md-12 ">
+        <div class="post col-md-12">
+            <span >following: <span id="following">{{ following_count }}</span></span>
+            <span>follower: <span id="follower">{{ follower_count }}</span></span>
+        </div>
+    </div>
+    
+    <div class="col-md-12 ">
+            {% for post in posts %}
+                <div class="new-post">
+                    {% if post.user.username %}
+                        <h4>{{ post.user }}</h4>
+                        {% else %}
+                        <h4>{{ post.user.email }}</h4>
+                    {% endif %}
+                    {% if post.user == user %}
+                        <div><a href="{% url 'edit-post' pk=post.id %}">Edit</a></div>
+                    {% endif %} 
+                    
+                    <div>{{ post.content }}</div>
+                    <div id="post-date">{{ post.date_posted }}</div>
+                    <div id="post-date">like: {{ post.like }}</div>
+            	</div>
+            {% endfor %}
+    </div>
+    <div class="col-md-12 ">
+            {% for user in users %}
+                <div class="follower">
+                    <form>
+                        <span>{{ user.username }}</span>
+                        	{% if user.id in fs %}
+{#                                <input type="hidden" value="unfollow">#}
+                        		<a id="but_{{ user.id }}" class="btn btn-danger follow" onclick="foll({{ user.id }})">unfollow</a>
+                                {% else %}
+{#                                <input type="hidden" value="follow">#}
+                                <a id="but_{{ user.id }}" class="btn btn-info follow" onclick="foll({{ user.id }})">follow</a>
+                        	{% endif %}
+                    </form>
+                
+                </div>
+            {% endfor %}
+    </div>
+    <script>
+        function foll(id) {
+            var but_id = document.querySelector(`#but_${id}`).innerHTML
+            const data = {
+                key1: document.querySelector(`#but_${id}`).innerHTML,
+                key2: id
+            };
+            if(document.querySelector(`#but_${id}`).innerHTML === 'follow'){
+                var following_ = parseInt(document.querySelector('#following').innerHTML)
+                document.querySelector('#following').innerHTML = ''
+                document.querySelector('#following').innerHTML = following_ + 1
+                document.querySelector(`#but_${id}`).innerHTML='unfollow';
+                document.querySelector(`#but_${id}`).className ='btn btn-danger follow'
+            }
+            else{
+                var following = parseInt(document.querySelector('#following').innerHTML)
+                document.querySelector('#following').innerHTML = ''
+                document.querySelector('#following').innerHTML = following - 1
+                document.querySelector(`#but_${id}`).innerHTML='follow';
+                document.querySelector(`#but_${id}`).className ='btn btn-info follow'
+            }
+    
+            fetch('/add_follower/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')  // برای ارسال توکن CSRF
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+        
+        // تابع برای دریافت توکن CSRF
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // بررسی نام کوکی
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+{% endblock %}

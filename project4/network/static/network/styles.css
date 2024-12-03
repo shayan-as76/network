@@ -1,0 +1,38 @@
+.new-post {
+    margin: 5px;
+    padding: 20px;
+    border: solid 1px #c7c7c7;
+}
+
+.post {
+    text-align: center;
+    margin: 5px;
+    padding: 20px;
+    border: solid 1px #c7c7c7;
+}
+
+.post span{
+    margin: 5px;
+    padding: 10px;
+    border: solid 1px #c7c7c7;
+}
+
+.follower form{
+    display: flex;
+    justify-content: space-between;
+    margin: 5px;
+    padding: 20px;
+    border: solid 1px #c7c7c7;
+}
+
+#post-date{
+    color: #807f7f;
+}
+
+.post span #following{
+    border: hidden 1px;
+}
+
+.post span #follower{
+    border: hidden 1px;
+}
